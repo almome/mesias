@@ -1,0 +1,22 @@
+
+{
+  "airQuality": {
+    "name": "My WoT Air Quality Resource",
+    "description": "A mote for air quality.",
+    "port": 8484,
+    "sensors": {
+      "CO": {
+        "name": "CO Sensor",
+        "description": "A carbon monoxide sensor.",
+        "unit": "ppm",
+        "value": 0
+      },
+      "Ozone": {
+        "name": "O3 Sensor",
+        "description": "An ozone sensor.",
+        "unit": "g/Nm3",
+        "value": 0
+      }
+    }
+  }
+}
