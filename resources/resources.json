@@ -1,0 +1,105 @@
+{
+  "sonobuoysDataBase": {
+    "name": "Sonobuoys Resource",
+    "description": "Data base for sonobuoys to understand the ocean.",
+    "port": 8484,
+    "sonobuoys": [
+        {
+          "id": "SBY-0237A",
+          "lat": 36.54723,
+          "lon": -6.28219,
+
+          "temp_c": 18.7,
+          "sal_psu": 35.1,
+          "pressure_dbar": 1025.6,
+          "depth_m": 35.2,
+
+          "dom_freq_hz": 820,
+          "spl_db": 145.3,
+          "snr_db": 23.5,
+
+          "batt_pct": 87,
+          "rssi_dbm": -64,
+
+          "status": "OK"
+        },
+      {
+        "id": "SBY-0238A",
+        "lat": 36.54723,
+        "lon": -6.28219,
+
+        "temp_c": 18.7,
+        "sal_psu": 35.1,
+        "pressure_dbar": 1025.6,
+        "depth_m": 35.2,
+
+        "dom_freq_hz": 820,
+        "spl_db": 145.3,
+        "snr_db": 23.5,
+
+        "batt_pct": 87,
+        "rssi_dbm": -64,
+
+        "status": "OK"
+      },
+      {
+        "id": "SBY-0239A",
+        "lat": 36.54723,
+        "lon": -6.28219,
+
+        "temp_c": 18.7,
+        "sal_psu": 35.1,
+        "pressure_dbar": 1025.6,
+        "depth_m": 35.2,
+
+        "dom_freq_hz": 820,
+        "spl_db": 145.3,
+        "snr_db": 23.5,
+
+        "batt_pct": 87,
+        "rssi_dbm": -64,
+
+        "status": "OK"
+      },
+      {
+        "id": "SBY-0240A",
+        "lat": 36.54723,
+        "lon": -6.28219,
+
+        "temp_c": 18.7,
+        "sal_psu": 35.1,
+        "pressure_dbar": 1025.6,
+        "depth_m": 35.2,
+
+        "dom_freq_hz": 820,
+        "spl_db": 145.3,
+        "snr_db": 23.5,
+
+        "batt_pct": 87,
+        "rssi_dbm": -64,
+
+        "status": "OK"
+      },
+      {
+        "id": "SBY-0241A",
+        "lat": 36.54723,
+        "lon": -6.28219,
+
+        "temp_c": 18.7,
+        "sal_psu": 35.1,
+        "pressure_dbar": 1025.6,
+        "depth_m": 35.2,
+
+        "dom_freq_hz": 820,
+        "spl_db": 145.3,
+        "snr_db": 23.5,
+
+        "batt_pct": 87,
+        "rssi_dbm": -64,
+
+        "status": "OK"
+      }
+    ]
+    }
+  }
+
