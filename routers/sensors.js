@@ -2,6 +2,34 @@ var express = require('express'),
     router = express.Router(),
     resources = require('./../resources/model');
 
+const mongoose = require('mongoose');
+
+// Modelo de MongoDB
+const TelemetrySchema = new mongoose.Schema({
+    id: String,
+    ts: Date,
+    lat: Number,
+    lon: Number,
+    temp_c: Number,
+    sal_psu: Number,
+    pressure_dbar: Number,
+    depth_m: Number,
+    dom_freq_hz: Number,
+    spl_db: Number,
+    snr_db: Number,
+    batt_pct: Number,
+    rssi_dbm: Number,
+    status: String
+}, { collection: "telemetry" });
+
+const Telemetry = mongoose.model("Telemetry", TelemetrySchema);
+
+mongoose.connect("mongodb://localhost:27017/ocean_iot")
+    .then(()=> console.log("MongoDB connected"))
+    .catch(err => console.log("MongoDB error:", err));
+
+
+
 //Devuelve la base de datos completa con todas las sonoboyas
 router.route('/').get(function (req, res, next) {
     res.send(resources.sonobuoysDataBase);
