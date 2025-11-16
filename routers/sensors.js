@@ -30,36 +30,37 @@ mongoose.connect("mongodb://localhost:27017/ocean_iot")
 
 
 
-//Devuelve la base de datos completa con todas las sonoboyas
-router.route('/').get(function (req, res, next) {
-    res.send(resources.sonobuoysDataBase);
+
+//Devuelve la base de datos completa con las 100 últimas sonoboyas
+router.route('/lastest').get(async function (req, res, next) {
+    const { id, limit = 100 } = req.query;
+
+    const q = id ? {id} : {};
+
+    const items = await Telemetry.find(q).sort({ts:-1}).limit(Number(limit));
+
+    res.json(items);
     next();
 });
+
 
 //Post para actualizar la base de datos de sonoboyas
-router.route('/updateSonobuoys').post(function (req, res, next) {
-    resources.sonobuoysDataBase = req.body;
-    console.log(req.body);
-    res.status(200).send("Sonobuoys updated");
-    next();
-});
+router.route('/updateSonobuoys').post(async function (req, res, next) {
+    try{
+        const data = req.body;
 
-//Post para actualizar el estado de sonoboyas
-router.route('/updateStatus').post(function (req, res, next) {
-    const {id, status} = req.body;
-    const buoy = resources.sonobuoysDataBase.sonobuoys.find(b=>b.id === id);
+        if (!data.ts) data.ts = new Date();
 
-    if (!id || !status) {
-        return res.status(400).send("Missing id or status");
-    }
-    if(!buoy) {
-        return res.status(404).send("Sonobuoy not found");
+        const saved = await Telemetry.create(data);
+
+        console.log("Inserted telemetry:", saved);
+        res.status(201).send("Telemetry saved");
+        next();
+    }catch (err){
+        console.error("Telemetry insert error:", err);
+        res.status(400).send("Error saving telemetry");
     }
 
-    buoy.status = status;
-
-    console.log(`Updated ${id} with status ${status}`);
-    res.status(200).send("Sonobuoys status updated");
     next();
 });
 
