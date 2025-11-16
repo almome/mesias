@@ -1,0 +1,38 @@
+{
+    "Version": "1.2",
+    "Data": {
+        "Source": "c:\\users\\facel\\git\\mesias\\unreal-sim\\plugins\\mqttutilities\\source\\mqttutilities\\private\\windows\\mqttclient.cpp",
+        "ProvidedModule": "",
+        "PCH": "c:\\users\\facel\\git\\mesias\\unreal-sim\\intermediate\\build\\win64\\x64\\mesiaseditor\\development\\unrealed\\sharedpch.unrealed.project.valapi.valexpapi.cpp20.inclorderunreal5_3.h.pch",
+        "Includes": [
+            "c:\\users\\facel\\git\\mesias\\unreal-sim\\plugins\\mqttutilities\\intermediate\\build\\win64\\x64\\unrealeditor\\development\\mqttutilities\\definitions.mqttutilities.h",
+            "c:\\users\\facel\\git\\mesias\\unreal-sim\\plugins\\mqttutilities\\source\\mqttutilities\\private\\windows\\mqttclient.h",
+            "c:\\users\\facel\\git\\mesias\\unreal-sim\\plugins\\mqttutilities\\source\\mqttutilities\\private\\mqttclientbase.h",
+            "c:\\users\\facel\\git\\mesias\\unreal-sim\\plugins\\mqttutilities\\source\\mqttutilities\\public\\interface\\mqttclientinterface.h",
+            "c:\\users\\facel\\git\\mesias\\unreal-sim\\plugins\\mqttutilities\\source\\mqttutilities\\public\\entities\\mqttmessage.h",
+            "c:\\users\\facel\\git\\mesias\\unreal-sim\\plugins\\mqttutilities\\intermediate\\build\\win64\\unrealeditor\\inc\\mqttutilities\\uht\\mqttmessage.generated.h",
+            "c:\\users\\facel\\git\\mesias\\unreal-sim\\plugins\\mqttutilities\\source\\mqttutilities\\public\\entities\\mqttconnectiondata.h",
+            "c:\\users\\facel\\git\\mesias\\unreal-sim\\plugins\\mqttutilities\\intermediate\\build\\win64\\unrealeditor\\inc\\mqttutilities\\uht\\mqttconnectiondata.generated.h",
+            "c:\\users\\facel\\git\\mesias\\unreal-sim\\plugins\\mqttutilities\\source\\mqttutilities\\public\\entities\\mqttclientconfig.h",
+            "c:\\users\\facel\\git\\mesias\\unreal-sim\\plugins\\mqttutilities\\intermediate\\build\\win64\\unrealeditor\\inc\\mqttutilities\\uht\\mqttclientconfig.generated.h",
+            "c:\\users\\facel\\git\\mesias\\unreal-sim\\plugins\\mqttutilities\\intermediate\\build\\win64\\unrealeditor\\inc\\mqttutilities\\uht\\mqttclientinterface.generated.h",
+            "c:\\users\\facel\\git\\mesias\\unreal-sim\\plugins\\mqttutilities\\intermediate\\build\\win64\\unrealeditor\\inc\\mqttutilities\\uht\\mqttclientbase.generated.h",
+            "c:\\users\\facel\\git\\mesias\\unreal-sim\\plugins\\mqttutilities\\intermediate\\build\\win64\\unrealeditor\\inc\\mqttutilities\\uht\\mqttclient.generated.h",
+            "c:\\users\\facel\\git\\mesias\\unreal-sim\\plugins\\mqttutilities\\source\\mqttutilities\\private\\windows\\mqttrunnable.h",
+            "c:\\users\\facel\\git\\mesias\\unreal-sim\\plugins\\mqttutilities\\source\\mqttutilities\\private\\windows\\mqtttask.h",
+            "c:\\program files\\microsoft visual studio\\2022\\community\\vc\\tools\\msvc\\14.44.35207\\include\\queue",
+            "c:\\program files\\microsoft visual studio\\2022\\community\\vc\\tools\\msvc\\14.44.35207\\include\\deque",
+            "c:\\program files\\microsoft visual studio\\2022\\community\\vc\\tools\\msvc\\14.44.35207\\include\\xpolymorphic_allocator.h",
+            "c:\\program files\\microsoft visual studio\\2022\\community\\vc\\tools\\msvc\\14.44.35207\\include\\vector",
+            "c:\\program files\\microsoft visual studio\\2022\\community\\vc\\tools\\msvc\\14.44.35207\\include\\__msvc_bit_utils.hpp",
+            "c:\\program files\\microsoft visual studio\\2022\\community\\vc\\tools\\msvc\\14.44.35207\\include\\__msvc_sanitizer_annotate_container.hpp",
+            "c:\\program files\\microsoft visual studio\\2022\\community\\vc\\tools\\msvc\\14.44.35207\\include\\string",
+            "c:\\program files\\microsoft visual studio\\2022\\community\\vc\\tools\\msvc\\14.44.35207\\include\\xstring",
+            "c:\\program files\\microsoft visual studio\\2022\\community\\vc\\tools\\msvc\\14.44.35207\\include\\__msvc_string_view.hpp",
+            "c:\\program files\\microsoft visual studio\\2022\\community\\vc\\tools\\msvc\\14.44.35207\\include\\cctype",
+            "c:\\users\\facel\\git\\mesias\\unreal-sim\\plugins\\mqttutilities\\source\\mqttutilities\\private\\windows\\utils\\stringutils.h"
+        ],
+        "ImportedModules": [],
+        "ImportedHeaderUnits": []
+    }
+}

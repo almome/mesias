@@ -184,3 +184,4 @@ fabric.properties
 .idea/**/azureSettings.xml
 
 .idea/*
+unreal-sim/Content/StarterContent

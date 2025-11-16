@@ -1,0 +1,15 @@
+{
+    "Version": "1.2",
+    "Data": {
+        "Source": "c:\\users\\facel\\git\\mesias\\unreal-sim\\plugins\\mqttutilities\\intermediate\\build\\win64\\unrealeditor\\inc\\mqttutilities\\uht\\mqttclientconfig.gen.cpp",
+        "ProvidedModule": "",
+        "PCH": "c:\\users\\facel\\git\\mesias\\unreal-sim\\intermediate\\build\\win64\\x64\\mesiaseditor\\development\\unrealed\\sharedpch.unrealed.project.valapi.valexpapi.cpp20.inclorderunreal5_3.h.pch",
+        "Includes": [
+            "c:\\users\\facel\\git\\mesias\\unreal-sim\\plugins\\mqttutilities\\intermediate\\build\\win64\\x64\\unrealeditor\\development\\mqttutilities\\definitions.mqttutilities.h",
+            "c:\\users\\facel\\git\\mesias\\unreal-sim\\plugins\\mqttutilities\\source\\mqttutilities\\public\\entities\\mqttclientconfig.h",
+            "c:\\users\\facel\\git\\mesias\\unreal-sim\\plugins\\mqttutilities\\intermediate\\build\\win64\\unrealeditor\\inc\\mqttutilities\\uht\\mqttclientconfig.generated.h"
+        ],
+        "ImportedModules": [],
+        "ImportedHeaderUnits": []
+    }
+}
