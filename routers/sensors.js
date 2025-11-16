@@ -46,7 +46,7 @@ router.route('/listSonobuoysID').get(async function (req, res, next){
 
 
 //Devuelve el último dato de una sonoboya en concreto
-router.route('/lastestReading').get(async function (req, res, next){
+router.route('/sonobuoyLastestReading').get(async function (req, res, next){
     try{
         const id = req.query.id;
 
@@ -72,7 +72,7 @@ router.route('/lastestReading').get(async function (req, res, next){
 
 
 //Devuelve los 10 últimos registros de un parámetro concreto de una sonoboya concreta
-router.route('/history').get(async function (req, res, next) {
+router.route('/sonobuoyFieldHistory').get(async function (req, res, next) {
     try{
         const { id, field } = req.query;
 
@@ -86,10 +86,7 @@ router.route('/history').get(async function (req, res, next) {
             res.status(400).send("Field not allowed");
         }
 
-        const docs = await Telemetry.find({ id })
-            .sort({ ts: -1 })
-            .limit(10)
-            .select({ ts: 1, [field]: 1, _id: 0 });
+        const docs = await Telemetry.find({ id }).sort({ ts: -1 }).limit(10).select({ ts: 1, [field]: 1, _id: 0 });
 
         if(!docs || docs.length === 0){
             res.status(404).send("No telemetry found for this sonobuoy");
@@ -103,20 +100,6 @@ router.route('/history').get(async function (req, res, next) {
         console.error("Telemetry insert error:", e);
         res.status(400).send("Error getting the 10 last values");
     }
-    next();
-});
-
-
-
-//Devuelve la base de datos completa con las 100 últimas sonoboyas
-router.route('/lastestData').get(async function (req, res, next) {
-    const { id, limit = 100 } = req.query;
-
-    const q = id ? {id} : {};
-
-    const items = await Telemetry.find(q).sort({ts:-1}).limit(Number(limit));
-
-    res.json(items);
     next();
 });
 
