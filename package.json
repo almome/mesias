@@ -1,7 +1,7 @@
 {
   "name": "marine-environment-situational-awareness-with-sonobuoys",
   "version": "1.0.0",
-  "description": "",
+  "description": "Marine Environment Situational Awareness with Sonobuoys",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -13,8 +13,17 @@
   "dependencies": {
     "body-parser": "^1.20.1",
     "cors": "^2.8.5",
-    "express": "^4.21.1",
+    "dotenv": "^17.2.3",
+    "express": "^4.21.2",
+    "mongoose": "^8.19.4",
     "node-json2html": "^3.2.0"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/almome/mesias.git"
+  },
+  "bugs": {
+    "url": "https://github.com/almome/mesias/issues"
+  },
+  "homepage": "https://github.com/almome/mesias#readme"
 }
-
