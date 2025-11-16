@@ -29,6 +29,7 @@ mongoose.connect("mongodb://localhost:27017/ocean_iot")
     .catch(err => console.log("MongoDB error:", err));
 
 
+
 //Devuelve un lista de las sonoboyas que hay actualmente en funcionamiento
 router.route('/listSonobuoysID').get(async function (req, res, next){
     try{
@@ -45,7 +46,7 @@ router.route('/listSonobuoysID').get(async function (req, res, next){
 
 
 //Devuelve el último dato de una sonoboya en concreto
-router.route('/sonobuoyLastestData').get(async function (req, res, next){
+router.route('/lastestReading').get(async function (req, res, next){
     try{
         const id = req.query.id;
 
@@ -64,6 +65,43 @@ router.route('/sonobuoyLastestData').get(async function (req, res, next){
     }catch (e) {
         console.error("Error getting lastest telemetry for this sonobuoy:", e);
         res.status(500).send("Error retrieving latest telemetry");
+    }
+    next();
+});
+
+
+
+//Devuelve los 10 últimos registros de un parámetro concreto de una sonoboya concreta
+router.route('/history').get(async function (req, res, next) {
+    try{
+        const { id, field } = req.query;
+
+        if(!id || !field){
+            res.status(400).send("No such ID or Field");
+        }
+
+        const allowedFields = ["temp_c", "sal_psu", "pressure_dbar", "depth_m", "dom_freq_hz", "spl_db", "snr_db", "batt_pct", "rssi_dbm"];
+
+        if(!allowedFields.includes(field)){
+            res.status(400).send("Field not allowed");
+        }
+
+        const docs = await Telemetry.find({ id })
+            .sort({ ts: -1 })
+            .limit(10)
+            .select({ ts: 1, [field]: 1, _id: 0 });
+
+        if(!docs || docs.length === 0){
+            res.status(404).send("No telemetry found for this sonobuoy");
+        }
+
+        const values = docs.filter(i => i[field] !== undefined && i[field] != null).map(i =>({ts: i.ts, value: i[field]}));
+
+        res.status(200).json({id: id, field: field, count: values.length, values: values});
+
+    }catch (e) {
+        console.error("Telemetry insert error:", e);
+        res.status(400).send("Error getting the 10 last values");
     }
     next();
 });
