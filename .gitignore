@@ -1,3 +1,10 @@
+# Unreal
+unreal-sim/[Bb]uild
+unreal-sim/[Bb]uilds
+unreal-sim/Binaries
+unreal-sim/DerivedDataCache
+unreal-sim/Intermediate
+unreal-sim/Saved
 # Default ignored files
 /shelf/
 /workspace.xml
