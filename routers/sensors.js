@@ -55,12 +55,11 @@ router.route('/updateSonobuoys').post(async function (req, res, next) {
 
         console.log("Inserted telemetry:", saved);
         res.status(201).send("Telemetry saved");
-        next();
-    }catch (err){
-        console.error("Telemetry insert error:", err);
+
+    }catch (e){
+        console.error("Telemetry insert error:", e);
         res.status(400).send("Error saving telemetry");
     }
-
     next();
 });
 
