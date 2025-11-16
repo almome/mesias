@@ -8,22 +8,6 @@
     "env": []
   },
   {
-    "id": "9f319e1d5b27f560",
-    "type": "debug",
-    "z": "15aacc0f70f98535",
-    "name": "debug 5",
-    "active": false,
-    "tosidebar": true,
-    "console": false,
-    "tostatus": false,
-    "complete": "false",
-    "statusVal": "",
-    "statusType": "auto",
-    "x": 860,
-    "y": 360,
-    "wires": []
-  },
-  {
     "id": "05e05784143f63d1",
     "type": "http request",
     "z": "15aacc0f70f98535",
@@ -76,7 +60,7 @@
     "type": "mqtt in",
     "z": "15aacc0f70f98535",
     "name": "",
-    "topic": "/IoDADirect/JamesWatt",
+    "topic": "mesias/buoy/#",
     "qos": "0",
     "datatype": "auto-detect",
     "broker": "72b9ccec460bb788",
@@ -84,11 +68,10 @@
     "rap": true,
     "rh": 0,
     "inputs": 0,
-    "x": 240,
+    "x": 220,
     "y": 220,
     "wires": [
       [
-        "05e05784143f63d1",
         "9d24507c62394298"
       ]
     ]
@@ -98,7 +81,7 @@
     "type": "function",
     "z": "15aacc0f70f98535",
     "name": "detectorStatus",
-    "func": "let id = msg.payload.id;\nlet spl = msg.payload.spl_db;\nlet snr = msg.payload.snr_db;\n\nlet splState = \"OK\";\nlet snrState = \"OK\";\nlet finalState = \"OK\";\n\n\nif (spl < 120) {\n    splState = \"OK\";\n} else if (spl >= 120 && spl <= 140) {\n    splState = \"WARNING\";\n} else {\n    splState = \"ALERT\";\n}\n\n\nif (snr > 20) {\n    snrState = \"OK\";\n} else if (snr >= 10 && snr <= 20) {\n    snrState = \"WARNING\";\n} else {\n    snrState = \"ALERT\";\n}\n\n// estado final\nif (splState === \"ALERT\" || snrState === \"ALERT\") {\n    finalState = \"ALERT\";\n} else if (splState === \"WARNING\" || snrState === \"WARNING\") {\n    finalState = \"WARNING\";\n} else {\n    finalState = \"OK\";\n}\n\n//el nuevo payload\nmsg.payload = {\n    id: id,\n    status: finalState\n};\n\n//para el json post\nmsg.headers = {\n    \"Content-Type\": \"application/json\"\n};\n\nreturn msg;",
+    "func": "let data = msg.payload;\n\n// Ejemplo: regla simple\nif (data.spl_db > 150 && data.snr_db > 20) {\n    data.status = \"ALERTA\";\n} else if (data.spl_db > 120) {\n    data.status = \"PRECAUCIÓN\";\n} else {\n    data.status = \"OK\";\n}\n\n// Devuelve el JSON modificado\nmsg.payload = {\n    id: data.id,\n    lat:data.lat,\n    lon:data.lon,\n    temp_c:data.temp_c,\n    sal_psu: data.sal_psu,\n    pressure_dbar: data.pressure_dbar,\n    depth_m: data.depth_m,\n    dom_freq_hz: data.dom_freq_hz,\n    spl_db: data.spl_db,\n    snr_db: data.snr_db,\n    batt_pct:data.batt_pct,\n    rssi_dbm: data.rssi_dbm,\n    status: data.status\n};\n\nreturn msg;",
     "outputs": 1,
     "timeout": 0,
     "noerr": 0,
@@ -106,42 +89,34 @@
     "finalize": "",
     "libs": [],
     "x": 440,
-    "y": 360,
+    "y": 220,
     "wires": [
       [
-        "e3463383ef91ee97"
+        "05e05784143f63d1"
       ]
     ]
   },
   {
-    "id": "e3463383ef91ee97",
-    "type": "http request",
+    "id": "c90abfc33593415c",
+    "type": "inject",
     "z": "15aacc0f70f98535",
-    "name": "/updateStatus",
-    "method": "POST",
-    "ret": "txt",
-    "paytoqs": "ignore",
-    "url": "localhost:8484/Sonobuoys/updateStatus",
-    "tls": "",
-    "persist": false,
-    "proxy": "",
-    "insecureHTTPParser": false,
-    "authType": "",
-    "senderr": false,
-    "headers": [
+    "name": "",
+    "props": [
       {
-        "keyType": "Content-Type",
-        "keyValue": "",
-        "valueType": "application/json",
-        "valueValue": ""
+        "p": "payload"
       }
     ],
-    "x": 660,
+    "repeat": "",
+    "crontab": "",
+    "once": false,
+    "onceDelay": 0.1,
+    "topic": "",
+    "payload": "{\"id\":\"01\",\"lat\":314,\"lon\":64,\"temp_c\":12,\"sal_psu\":30,\"pressure_dbar\":20,\"depth_m\":25,\"dom_freq_hz\":140,\"spl_db\":120,\"snr_db\":24,\"batt_pct\":90,\"rssi_dbm\":-60,\"status\":\"Deployed\"}",
+    "payloadType": "json",
+    "x": 190,
     "y": 360,
     "wires": [
-      [
-        "9f319e1d5b27f560"
-      ]
+      []
     ]
   },
   {
