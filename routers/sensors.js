@@ -29,10 +29,49 @@ mongoose.connect("mongodb://localhost:27017/ocean_iot")
     .catch(err => console.log("MongoDB error:", err));
 
 
+//Devuelve un lista de las sonoboyas que hay actualmente en funcionamiento
+router.route('/listSonobuoysID').get(async function (req, res, next){
+    try{
+        const names = await Telemetry.distinct('id');
+
+        res.status(200).json({sonobuos: names});
+
+    }catch (e) {
+        console.error("Error getting sonobuoys names from MongoDB:", e);
+        res.status(500).send("Error getting sonobuoy names");
+    }
+    next();
+});
+
+
+//Devuelve el último dato de una sonoboya en concreto
+router.route('/sonobuoyLastestData').get(async function (req, res, next){
+    try{
+        const id = req.query.id;
+
+        if(!id){
+            res.status(400).send("No such ID");
+        }
+
+        const result =  await Telemetry.findOne({id}).sort({ts:-1});
+
+        if(!result){
+            res.status(404).send("No telemetry found for this sonobuoy.");
+        }
+
+        res.status(200).json(result);
+
+    }catch (e) {
+        console.error("Error getting lastest telemetry for this sonobuoy:", e);
+        res.status(500).send("Error retrieving latest telemetry");
+    }
+    next();
+});
+
 
 
 //Devuelve la base de datos completa con las 100 últimas sonoboyas
-router.route('/lastest').get(async function (req, res, next) {
+router.route('/lastestData').get(async function (req, res, next) {
     const { id, limit = 100 } = req.query;
 
     const q = id ? {id} : {};
