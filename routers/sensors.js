@@ -60,6 +60,16 @@ router.route('/sonobuoyLastestReading').get(async function (req, res, next){
             res.status(404).send("No telemetry found for this sonobuoy.");
         }
 
+        const currentTs = Math.floor(Date.now() / 1000);
+        const diffTs = currentTs - Math.floor(result.ts / 1000);
+
+        if(diffTs > 30){
+            console.log(`Sonobuoy ${id} is offline...`);
+
+            await Telemetry.updateOne({id}, {$set: {status: "OFFLINE"}});
+
+        }
+
         res.status(200).json(result);
 
     }catch (e) {
