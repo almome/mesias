@@ -33,6 +33,10 @@
 		{
 			"Name": "VaRest",
 			"Enabled": true
+		},
+		{
+			"Name": "DataCharts",
+			"Enabled": true
 		}
 	]
 }
