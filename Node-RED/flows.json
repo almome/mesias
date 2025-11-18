@@ -30,7 +30,7 @@
         "valueValue": ""
       }
     ],
-    "x": 670,
+    "x": 970,
     "y": 220,
     "wires": [
       [
@@ -51,7 +51,7 @@
     "targetType": "msg",
     "statusVal": "",
     "statusType": "auto",
-    "x": 860,
+    "x": 1160,
     "y": 220,
     "wires": []
   },
@@ -81,14 +81,14 @@
     "type": "function",
     "z": "15aacc0f70f98535",
     "name": "detectorStatus",
-    "func": "let data = msg.payload;\n\nif(data.status == \"deployed\"){\n\n    // Ejemplo: regla simple\n    if (data.spl_db > 150 && data.snr_db > 20) {\n        data.status = \"ALERTA\";\n    } else if (data.spl_db > 120) {\n        data.status = \"PRECAUCIÓN\";\n    } else {\n        data.status = \"OK\";\n    }\n\n    // Devuelve el JSON modificado\n    msg.payload = {\n        id: data.id,\n        lat: data.lat,\n        lon: data.lon,\n        temp_c: data.temp_c,\n        sal_psu: data.sal_psu,\n        pressure_dbar: data.pressure_dbar,\n        depth_m: data.depth_m,\n        dom_freq_hz: data.dom_freq_hz,\n        spl_db: data.spl_db,\n        snr_db: data.snr_db,\n        batt_pct: data.batt_pct,\n        rssi_dbm: data.rssi_dbm,\n        status: data.status\n    };\n}\n\n\nreturn msg;",
+    "func": "let data = msg.payload;\n\nif(data.status == \"deployed\"){\n\n    // Ejemplo: regla simple\n    if (data.spl_db > 150 && data.snr_db > 20) {\n        data.status = \"ALERT\";\n    } else if (data.spl_db > 120) {\n        data.status = \"WARNING\";\n    } else {\n        data.status = \"OK\";\n    }\n\n    // Devuelve el JSON modificado\n    msg.payload = {\n        id: data.id,\n        lat: data.lat,\n        lon: data.lon,\n        temp_c: data.temp_c,\n        sal_psu: data.sal_psu,\n        pressure_dbar: data.pressure_dbar,\n        depth_m: data.depth_m,\n        dom_freq_hz: data.dom_freq_hz,\n        spl_db: data.spl_db,\n        snr_db: data.snr_db,\n        batt_pct: data.batt_pct,\n        rssi_dbm: data.rssi_dbm,\n        status: data.status\n    };\n}\n\n\nreturn msg;",
     "outputs": 1,
     "timeout": 0,
     "noerr": 0,
     "initialize": "",
     "finalize": "",
     "libs": [],
-    "x": 440,
+    "x": 740,
     "y": 220,
     "wires": [
       [
@@ -97,26 +97,93 @@
     ]
   },
   {
-    "id": "c90abfc33593415c",
+    "id": "a265e7b78d411bf6",
     "type": "inject",
     "z": "15aacc0f70f98535",
-    "name": "",
+    "name": "Simulador SB-0237",
     "props": [
       {
         "p": "payload"
       }
     ],
-    "repeat": "",
+    "repeat": "3",
     "crontab": "",
-    "once": false,
-    "onceDelay": 0.1,
+    "once": true,
+    "onceDelay": "1",
     "topic": "",
-    "payload": "{\"id\":\"sonoprueba01\",\"lat\":314,\"lon\":64,\"temp_c\":22,\"sal_psu\":30,\"pressure_dbar\":20,\"depth_m\":25,\"dom_freq_hz\":140,\"spl_db\":120,\"snr_db\":24,\"batt_pct\":90,\"rssi_dbm\":-60,\"status\":\"deployed\"}",
-    "payloadType": "json",
-    "x": 190,
-    "y": 360,
+    "payload": "",
+    "payloadType": "date",
+    "x": 160,
+    "y": 340,
     "wires": [
-      []
+      [
+        "082aef64eee5ac08"
+      ]
+    ]
+  },
+  {
+    "id": "082aef64eee5ac08",
+    "type": "function",
+    "z": "15aacc0f70f98535",
+    "name": "Generar datos SB-0237",
+    "func": "\nfunction rand(base, delta, decimals = 2) {\n    const v = base + (Math.random() * 2 - 1) * delta;\n    return Number(v.toFixed(decimals));\n}\n\nconst now = Math.floor(Date.now() / 1000); // timestamp en segundos\n\nlet temp_c = rand(18.7, 0.8);\nlet sal_psu = rand(35.1, 0.5);\nlet pressure = rand(1025.6, 10);\nlet depth_m = rand(35.2, 3);\nlet dom_freq_hz = rand(820, 200, 0);\nlet spl_db = rand(145.3, 15);\nlet snr_db = rand(23.5, 8);\nlet batt_pct = rand(60, 20, 0); // batería entre 40 y 80\nlet rssi_dbm = Math.round(-64 + (Math.random() * 2 - 1) * 6);\nlet status = \"deployed\"\n\nmsg.payload = {\n    id: \"SB-0237\",\n    lat: 36.54723,\n    lon: -6.28219,\n\n    temp_c: temp_c,\n    sal_psu: sal_psu,\n    pressure_dbar: pressure,\n    depth_m: depth_m,\n\n    dom_freq_hz: dom_freq_hz,\n    spl_db: spl_db,\n    snr_db: snr_db,\n\n    batt_pct: batt_pct,\n    rssi_dbm: rssi_dbm,\n\n    status: status,\n    timestamp: now\n};\n\nmsg.topic = \"sonobuoys/telemetry/SB-0237\";\n\nreturn msg;",
+    "outputs": 1,
+    "timeout": "",
+    "noerr": 0,
+    "initialize": "",
+    "finalize": "",
+    "libs": [],
+    "x": 450,
+    "y": 340,
+    "wires": [
+      [
+        "9d24507c62394298"
+      ]
+    ]
+  },
+  {
+    "id": "6f19ece1e374408b",
+    "type": "inject",
+    "z": "15aacc0f70f98535",
+    "name": "Simulador SB-0238",
+    "props": [
+      {
+        "p": "payload"
+      }
+    ],
+    "repeat": "3",
+    "crontab": "",
+    "once": true,
+    "onceDelay": "2",
+    "topic": "",
+    "payload": "",
+    "payloadType": "date",
+    "x": 220,
+    "y": 400,
+    "wires": [
+      [
+        "383d1b061ceb16fa"
+      ]
+    ]
+  },
+  {
+    "id": "383d1b061ceb16fa",
+    "type": "function",
+    "z": "15aacc0f70f98535",
+    "name": "Generar datos SB-0238",
+    "func": "function rand(base, delta, decimals = 2) {\n    const v = base + (Math.random() * 2 - 1) * delta;\n    return Number(v.toFixed(decimals));\n}\n\nconst now = Math.floor(Date.now() / 1000); // timestamp en segundos\n\nlet temp_c = rand(19.5, 1.0);\nlet sal_psu = rand(34.8, 0.7);\nlet pressure = rand(1030, 15);\nlet depth_m = rand(40, 5);\nlet dom_freq_hz = rand(900, 250, 0);\nlet spl_db = rand(150, 20);\nlet snr_db = rand(20, 10);\nlet batt_pct = rand(50, 25, 0); // batería algo más baja\nlet rssi_dbm = Math.round(-70 + (Math.random() * 2 - 1) * 8);\nlet status = \"deployed\"\n\nmsg.payload = {\n    id: \"SB-0238\",\n    lat: 36.54723,\n    lon: -6.28219,\n\n    temp_c: temp_c,\n    sal_psu: sal_psu,\n    pressure_dbar: pressure,\n    depth_m: depth_m,\n\n    dom_freq_hz: dom_freq_hz,\n    spl_db: spl_db,\n    snr_db: snr_db,\n\n    batt_pct: batt_pct,\n    rssi_dbm: rssi_dbm,\n\n    status: status,\n    timestamp: now\n};\n\nmsg.topic = \"sonobuoys/telemetry/SBY-0238A\";\n\nreturn msg;",
+    "outputs": 1,
+    "timeout": "",
+    "noerr": 0,
+    "initialize": "",
+    "finalize": "",
+    "libs": [],
+    "x": 510,
+    "y": 400,
+    "wires": [
+      [
+        "9d24507c62394298"
+      ]
     ]
   },
   {
