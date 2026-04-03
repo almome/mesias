@@ -9,8 +9,6 @@
 #    2. RabbitMQ
 #    3. Node-RED
 #    4. Servidor JavaScript (Node.js)
-#    5. Servidor Java (.jar)
-#    6. Unreal Engine
 #
 #  Uso:
 #    chmod +x deploy.sh
@@ -48,7 +46,7 @@ NODERED_PORT=1880
 NODERED_DIR="$HOME/.node-red"   # Directorio con flows y configuración
 
 # ── Configuración Servidor JS ───────────────────────────────────
-JS_SERVER_DIR="$HOME/Documents/Master Investigación/IC/Proyecto_IC/marine-environment-situational-awareness-with-sonobuoys"
+JS_SERVER_DIR="$HOME/Documents/Master Investigación/SDSA/Trabajo Practico/mesias" #MODIFICAR según donde tengas la carpeta del proyecto de IC
 JS_SERVER_FILE="wot-server.js"
 JS_SERVER_PORT=8484
 

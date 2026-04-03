@@ -5,8 +5,6 @@
 # ═══════════════════════════════════════════════════════════════
 #
 #  Para los servicios en orden inverso al arranque:
-#    6. Unreal Engine
-#    5. Servidor Java
 #    4. Servidor JavaScript
 #    3. Node-RED
 #    2. RabbitMQ
