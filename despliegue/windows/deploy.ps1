@@ -149,23 +149,28 @@ Wait-ForPort $NODERED_PORT "Node-RED"
 Success "Node-RED listo -> http://localhost:$NODERED_PORT"
 
 # ── 4. Servidor JavaScript ──────────────────────────────────────
+Log "Comprobando dependencias del servidor JS..."
+if (-not (Test-Path "$JS_SERVER_DIR\$JS_SERVER_FILE")) {
+    Err "No se encontro $JS_SERVER_FILE en: $JS_SERVER_DIR"
+}
+Push-Location $JS_SERVER_DIR
+npm install 2>&1 | Add-Content -Path "$PSScriptRoot\$LOGS_DIR\js-server.log"
+if ($LASTEXITCODE -ne 0) { Err "npm install fallo. Revisa $LOGS_DIR\js-server.log" }
+Success "Dependencias listas"
+
 Log "Arrancando servidor JavaScript (wot-server)..."
 try {
     $tcp = New-Object System.Net.Sockets.TcpClient("localhost", $JS_SERVER_PORT)
     $tcp.Close()
     Warn "Servidor JS ya esta en ejecucion, saltando..."
 } catch {
-    if (-not (Test-Path "$JS_SERVER_DIR\$JS_SERVER_FILE")) {
-        Err "No se encontro $JS_SERVER_FILE en: $JS_SERVER_DIR"
-    }
-    Push-Location $JS_SERVER_DIR
     $jsProc = Start-Process "node" `
         -ArgumentList $JS_SERVER_FILE `
         -RedirectStandardOutput "$PSScriptRoot\$LOGS_DIR\js-server.log" `
         -PassThru -WindowStyle Hidden
     $jsProc.Id | Out-File -FilePath "$env:TEMP\js-server.pid"
-    Pop-Location
 }
+Pop-Location
 Wait-ForPort $JS_SERVER_PORT "Servidor JS"
 Success "Servidor JS listo -> http://localhost:$JS_SERVER_PORT"
 
