@@ -120,12 +120,12 @@ public class EsperQueries{
         "SELECT e.id, e.lat, e.lon, " +
         "e.airQuality, " +
         "v.direction as dir_viento, " +
-        "v.velocidad as vel_viento, " +
+        "v.velocity as vel_viento, " +
         "'ALERTA: AIRE CONTAMINADO HACIA CIUDAD' as mensaje " +
         "FROM pattern [ " +
         "every e = eNose(airQuality < 30) " +
         "-> v = Viento(direction in ('S', 'SE', 'SW', 'SSE', 'SSW') " +
-        "AND velocidad > 15.0) " +
+        "AND velocity > 15.0) " +
         "where timer:within(10 min) " +
         "]";
 

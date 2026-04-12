@@ -100,19 +100,15 @@ public class Main {
         Integer lat = optEntero(n, "lat");
         Integer lon = optEntero(n, "lon");
 
-        if ((n.has("direccion") && !n.isNull("direccion"))
-                || (n.has("direction") && !n.isNull("direction"))) {
+        if (n.has("direction") && !n.isNull("direction"))) {
             String direction = optCadena(n, "direction");
-            if (direction == null) {
-                direction = optCadena(n, "direccion");
-            }
-            Double velocidad = optDoble(n, "velocidad");
-            if (direction == null || velocidad == null) {
+            Double velocity = optDoble(n, "velocity");
+            if (direction == null || velocity == null) {
                 throw new JSONException("Viento: se requieren direction/direccion y velocidad");
             }
             JSONObject o = new JSONObject();
             o.put("direction", direction);
-            o.put("velocidad", velocidad);
+            o.put("velocity", velocity);
             EsperUtils.sendEventTyped(o.toString(), "Viento");
             return;
         }
