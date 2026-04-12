@@ -84,10 +84,13 @@ public class Main {
     }
 
     /**
-     * Convierte un JSON agregado de boya/sensor en varios JSON por dominio y los envía a Esper
-     * (un evento por tipo). Acepta claves con espacios accidentales (p. ej. {@code " id "}).
-     * {@code Viento} y {@code eNose} solo se emiten si vienen en el mensaje (objeto anidado
-     * {@code viento} / {@code enose} o campos en raíz para viento).
+     * Convierte JSON de entrada en uno o varios eventos Esper.
+     * <ul>
+     *   <li>Si en la raíz hay {@code airQuality} → se trata como mensaje eNose (requiere {@code id}, {@code lat}, {@code lon}).</li>
+     *   <li>Si en la raíz hay {@code direccion} (o {@code direction}) → mensaje Viento (requiere {@code velocidad}); no exige id/lat/lon.</li>
+     *   <li>En caso contrario → JSON agregado de boya (exige {@code id}, {@code lat}, {@code lon} y fan-out de sensores).</li>
+     * </ul>
+     * Convive con MQTT vía plugin RabbitMQ: el cuerpo es el mismo JSON; no depende de cabeceras AMQP.
      */
     private static void transformarYLanzarEventosEsper(String jsonEntrada) throws JSONException {
         JSONObject raw = new JSONObject(jsonEntrada);
@@ -96,8 +99,39 @@ public class Main {
         String id = optCadena(n, "id");
         Integer lat = optEntero(n, "lat");
         Integer lon = optEntero(n, "lon");
+
+        if ((n.has("direccion") && !n.isNull("direccion"))
+                || (n.has("direction") && !n.isNull("direction"))) {
+            String direction = optCadena(n, "direction");
+            if (direction == null) {
+                direction = optCadena(n, "direccion");
+            }
+            Double velocidad = optDoble(n, "velocidad");
+            if (direction == null || velocidad == null) {
+                throw new JSONException("Viento: se requieren direction/direccion y velocidad");
+            }
+            JSONObject o = new JSONObject();
+            o.put("direction", direction);
+            o.put("velocidad", velocidad);
+            EsperUtils.sendEventTyped(o.toString(), "Viento");
+            return;
+        }
+
         if (id == null || lat == null || lon == null) {
             throw new JSONException("Faltan campos obligatorios id, lat o lon tras normalizar claves");
+        }
+
+
+        if (n.has("airQuality") && !n.isNull("airQuality")) {
+            Integer iaq = optEntero(n, "airQuality");
+            
+            JSONObject o = new JSONObject();
+            o.put("id", id);
+            o.put("lat", lat);
+            o.put("lon", lon);
+            o.put("airQuality", iaq);
+            EsperUtils.sendEventTyped(o.toString(), "eNose");
+            return;
         }
 
         enviarSiPresente(n, "temp_c", () -> {
@@ -156,43 +190,6 @@ public class Main {
             o.put("rssi_dbm", optEntero(n, "rssi_dbm"));
             o.put("status", optCadena(n, "status"));
             EsperUtils.sendEventTyped(o.toString(), "Estado");
-        }
-
-        if (n.has("viento") && n.get("viento") instanceof JSONObject) {
-            JSONObject w = normalizarClavesJson(n.getJSONObject("viento"));
-            String direccion = optCadena(w, "direccion");
-            Double velocidad = optDoble(w, "velocidad");
-            if (direccion != null && velocidad != null) {
-                JSONObject o = new JSONObject();
-                o.put("direccion", direccion);
-                o.put("velocidad", velocidad);
-                EsperUtils.sendEventTyped(o.toString(), "Viento");
-            }
-        } else if (n.has("direccion") && n.has("velocidad")) {
-            String direccion = optCadena(n, "direccion");
-            Double velocidad = optDoble(n, "velocidad");
-            if (direccion != null && velocidad != null) {
-                JSONObject o = new JSONObject();
-                o.put("direccion", direccion);
-                o.put("velocidad", velocidad);
-                EsperUtils.sendEventTyped(o.toString(), "Viento");
-            }
-        }
-
-        if (n.has("enose") && n.get("enose") instanceof JSONObject) {
-            JSONObject e = normalizarClavesJson(n.getJSONObject("enose"));
-            String eid = optCadena(e, "id");
-            Integer elat = optEntero(e, "lat");
-            Integer elon = optEntero(e, "lon");
-            Integer iaq = optEntero(e, "airQuality");
-            if (eid != null && elat != null && elon != null && iaq != null) {
-                JSONObject o = new JSONObject();
-                o.put("id", eid);
-                o.put("lat", elat);
-                o.put("lon", elon);
-                o.put("airQuality", iaq);
-                EsperUtils.sendEventTyped(o.toString(), "eNose");
-            }
         }
     }
 
