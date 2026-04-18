@@ -1,0 +1,258 @@
+[
+    {
+        "id": "15aacc0f70f98535",
+        "type": "tab",
+        "label": "NodeRed_PracticalAssignment2526_MoronAlexandra_QuintanaLuisJose",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "05e05784143f63d1",
+        "type": "http request",
+        "z": "15aacc0f70f98535",
+        "name": "/updateSonobuoys",
+        "method": "POST",
+        "ret": "txt",
+        "paytoqs": "ignore",
+        "url": "localhost:8484/Sonobuoys/updateSonobuoys",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "",
+        "senderr": false,
+        "headers": [
+            {
+                "keyType": "Content-Type",
+                "keyValue": "",
+                "valueType": "application/json",
+                "valueValue": ""
+            }
+        ],
+        "x": 970,
+        "y": 220,
+        "wires": [
+            [
+                "069c0a331e1e3db8"
+            ]
+        ]
+    },
+    {
+        "id": "069c0a331e1e3db8",
+        "type": "debug",
+        "z": "15aacc0f70f98535",
+        "name": "debug 7",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1160,
+        "y": 220,
+        "wires": []
+    },
+    {
+        "id": "376f7049bd91b499",
+        "type": "mqtt in",
+        "z": "15aacc0f70f98535",
+        "name": "",
+        "topic": "mesias/buoy/#",
+        "qos": "0",
+        "datatype": "auto-detect",
+        "broker": "72b9ccec460bb788",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 220,
+        "y": 220,
+        "wires": [
+            [
+                "9d24507c62394298"
+            ]
+        ]
+    },
+    {
+        "id": "9d24507c62394298",
+        "type": "function",
+        "z": "15aacc0f70f98535",
+        "name": "detectorStatus",
+        "func": "let data = msg.payload;\n\nif(data.status == \"deployed\"){\n\n    // Ejemplo: regla simple\n    if (data.spl_db > 150 && data.snr_db > 20) {\n        data.status = \"ALERT\";\n    } else if (data.spl_db > 120) {\n        data.status = \"WARNING\";\n    } else {\n        data.status = \"OK\";\n    }\n\n    // Devuelve el JSON modificado\n    msg.payload = {\n        id: data.id,\n        lat: data.lat,\n        lon: data.lon,\n        temp_c: data.temp_c,\n        sal_psu: data.sal_psu,\n        pressure_dbar: data.pressure_dbar,\n        depth_m: data.depth_m,\n        dom_freq_hz: data.dom_freq_hz,\n        spl_db: data.spl_db,\n        snr_db: data.snr_db,\n        batt_pct: data.batt_pct,\n        rssi_dbm: data.rssi_dbm,\n        status: data.status\n    };\n}\n\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 740,
+        "y": 220,
+        "wires": [
+            [
+                "05e05784143f63d1",
+                "d0d5a28bf46ba18f"
+            ]
+        ]
+    },
+    {
+        "id": "a265e7b78d411bf6",
+        "type": "inject",
+        "z": "15aacc0f70f98535",
+        "name": "Simulador SB-0237",
+        "props": [
+            {
+                "p": "payload"
+            }
+        ],
+        "repeat": "3",
+        "crontab": "",
+        "once": true,
+        "onceDelay": "1",
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 160,
+        "y": 340,
+        "wires": [
+            [
+                "082aef64eee5ac08"
+            ]
+        ]
+    },
+    {
+        "id": "082aef64eee5ac08",
+        "type": "function",
+        "z": "15aacc0f70f98535",
+        "name": "Generar datos SB-0237",
+        "func": "\nfunction rand(base, delta, decimals = 2) {\n    const v = base + (Math.random() * 2 - 1) * delta;\n    return Number(v.toFixed(decimals));\n}\n\nconst now = Math.floor(Date.now() / 1000); // timestamp en segundos\n\nlet temp_c = rand(18.7, 0.8);\nlet sal_psu = rand(35.1, 0.5);\nlet pressure = rand(1025.6, 10);\nlet depth_m = rand(35.2, 3);\nlet dom_freq_hz = rand(820, 200, 0);\nlet spl_db = rand(145.3, 15);\nlet snr_db = rand(23.5, 8);\nlet batt_pct = rand(60, 20, 0); // batería entre 40 y 80\nlet rssi_dbm = Math.round(-64 + (Math.random() * 2 - 1) * 6);\nlet status = \"deployed\"\n\nmsg.payload = {\n    id: \"SB-0237\",\n    lat: 36.54723,\n    lon: -6.28219,\n\n    temp_c: temp_c,\n    sal_psu: sal_psu,\n    pressure_dbar: pressure,\n    depth_m: depth_m,\n\n    dom_freq_hz: dom_freq_hz,\n    spl_db: spl_db,\n    snr_db: snr_db,\n\n    batt_pct: batt_pct,\n    rssi_dbm: rssi_dbm,\n\n    status: status,\n    timestamp: now\n};\n\nmsg.topic = \"sonobuoys/telemetry/SB-0237\";\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 450,
+        "y": 340,
+        "wires": [
+            [
+                "9d24507c62394298"
+            ]
+        ]
+    },
+    {
+        "id": "6f19ece1e374408b",
+        "type": "inject",
+        "z": "15aacc0f70f98535",
+        "name": "Simulador SB-0238",
+        "props": [
+            {
+                "p": "payload"
+            }
+        ],
+        "repeat": "3",
+        "crontab": "",
+        "once": true,
+        "onceDelay": "2",
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 220,
+        "y": 400,
+        "wires": [
+            [
+                "383d1b061ceb16fa"
+            ]
+        ]
+    },
+    {
+        "id": "383d1b061ceb16fa",
+        "type": "function",
+        "z": "15aacc0f70f98535",
+        "name": "Generar datos SB-0238",
+        "func": "function rand(base, delta, decimals = 2) {\n    const v = base + (Math.random() * 2 - 1) * delta;\n    return Number(v.toFixed(decimals));\n}\n\nconst now = Math.floor(Date.now() / 1000); // timestamp en segundos\n\nlet temp_c = rand(19.5, 1.0);\nlet sal_psu = rand(34.8, 0.7);\nlet pressure = rand(1030, 15);\nlet depth_m = rand(40, 5);\nlet dom_freq_hz = rand(900, 250, 0);\nlet spl_db = rand(150, 20);\nlet snr_db = rand(20, 10);\nlet batt_pct = rand(50, 25, 0); // batería algo más baja\nlet rssi_dbm = Math.round(-70 + (Math.random() * 2 - 1) * 8);\nlet status = \"deployed\"\n\nmsg.payload = {\n    id: \"SB-0238\",\n    lat: 36.54723,\n    lon: -6.28219,\n\n    temp_c: temp_c,\n    sal_psu: sal_psu,\n    pressure_dbar: pressure,\n    depth_m: depth_m,\n\n    dom_freq_hz: dom_freq_hz,\n    spl_db: spl_db,\n    snr_db: snr_db,\n\n    batt_pct: batt_pct,\n    rssi_dbm: rssi_dbm,\n\n    status: status,\n    timestamp: now\n};\n\nmsg.topic = \"sonobuoys/telemetry/SBY-0238A\";\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 510,
+        "y": 400,
+        "wires": [
+            [
+                "9d24507c62394298"
+            ]
+        ]
+    },
+    {
+        "id": "d0d5a28bf46ba18f",
+        "type": "amqp-out",
+        "z": "15aacc0f70f98535",
+        "name": "",
+        "broker": "ae1e66acb227bd57",
+        "exchangeName": "amq.topic",
+        "exchangeType": "topic",
+        "exchangeRoutingKey": "test.algo",
+        "exchangeRoutingKeyType": "str",
+        "exchangeDurable": true,
+        "amqpProperties": "{ \"headers\": {} }",
+        "rpcTimeoutMilliseconds": 3000,
+        "outputs": 0,
+        "x": 980,
+        "y": 440,
+        "wires": []
+    },
+    {
+        "id": "72b9ccec460bb788",
+        "type": "mqtt-broker",
+        "name": "Broker MQTT COOL",
+        "broker": "broker.mqtt.cool",
+        "port": 1883,
+        "clientid": "",
+        "autoConnect": true,
+        "usetls": false,
+        "protocolVersion": 4,
+        "keepalive": 60,
+        "cleansession": true,
+        "autoUnsubscribe": true,
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthRetain": "false",
+        "birthPayload": "",
+        "birthMsg": {},
+        "closeTopic": "",
+        "closeQos": "0",
+        "closeRetain": "false",
+        "closePayload": "",
+        "closeMsg": {},
+        "willTopic": "",
+        "willQos": "0",
+        "willRetain": "false",
+        "willPayload": "",
+        "willMsg": {},
+        "userProps": "",
+        "sessionExpiry": ""
+    },
+    {
+        "id": "ae1e66acb227bd57",
+        "type": "amqp-broker",
+        "name": "test",
+        "host": "localhost",
+        "port": 5672,
+        "frameMax": 8192,
+        "vhost": "",
+        "tls": false,
+        "credsFromSettings": false
+    },
+    {
+        "id": "c41a4a9039a9d1af",
+        "type": "global-config",
+        "env": [],
+        "modules": {
+            "@villanoo/node-red-contrib-amqp": "2.4.7"
+        }
+    }
+]
