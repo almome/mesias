@@ -15,7 +15,7 @@ import java.util.concurrent.CountDownLatch;
 
 public class Main {
     /** Cola donde la fuente externa publica eventos simples (entrada al CEP). */
-    private static final String INPUT_QUEUE_NAME = "InputEvents";
+    private static final String INPUT_QUEUE_NAME = "test-queue";
     /** Cola donde el listener del CEP publica resultados (salida). */
     private static final String OUTPUT_QUEUE_NAME = "OutputMessages";
 
@@ -25,8 +25,8 @@ public class Main {
 
         Connection connection = factory.newConnection();
         Channel channel = connection.createChannel();
-        channel.queueDeclare(INPUT_QUEUE_NAME, false, false, false, null);
-        channel.queueDeclare(OUTPUT_QUEUE_NAME, false, false, false, null);
+        channel.queueDeclare(INPUT_QUEUE_NAME, true, false, false, null);
+        channel.queueDeclare(OUTPUT_QUEUE_NAME, true, false, false, null);
 
         // EPStatement configuration
         EsperUtils.init();
@@ -100,7 +100,7 @@ public class Main {
         Integer lat = optEntero(n, "lat");
         Integer lon = optEntero(n, "lon");
 
-        if (n.has("direction") && !n.isNull("direction"))) {
+        if (n.has("direction") && !n.isNull("direction")) {
             String direction = optCadena(n, "direction");
             Double velocity = optDoble(n, "velocity");
             if (direction == null || velocity == null) {
