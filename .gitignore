@@ -186,3 +186,4 @@ fabric.properties
 .idea/*
 unreal-sim/Content/StarterContent
 unreal-sim/cesium-request-cache.sqlite
+*.DS_Store
