@@ -15,7 +15,7 @@ import java.util.concurrent.CountDownLatch;
 
 public class Main {
     /** Cola donde la fuente externa publica eventos simples (entrada al CEP). */
-    private static final String INPUT_QUEUE_NAME = "test-queue";
+    private static final String INPUT_QUEUE_NAME = "InputMessages";
     /** Cola donde el listener del CEP publica resultados (salida). */
     private static final String OUTPUT_QUEUE_NAME = "OutputMessages";
 
