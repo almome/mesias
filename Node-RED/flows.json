@@ -227,6 +227,57 @@
         "y": 660,
         "wires": [
             [
+                "f1a2b3c4d5e6f708"
+            ]
+        ]
+    },
+    {
+        "id": "f1a2b3c4d5e6f708",
+        "type": "function",
+        "z": "15aacc0f70f98535",
+        "name": "parse CEP JSON",
+        "func": "if (Buffer.isBuffer(msg.payload)) {\n    msg.payload = msg.payload.toString('utf8');\n}\nif (typeof msg.payload === 'string') {\n    try {\n        msg.payload = JSON.parse(msg.payload);\n    } catch (e) {\n        node.error('CEP JSON inválido: ' + e.message);\n        return null;\n    }\n}\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 360,
+        "y": 660,
+        "wires": [
+            [
+                "e0f9a8b7c6d5e413"
+            ]
+        ]
+    },
+    {
+        "id": "e0f9a8b7c6d5e413",
+        "type": "http request",
+        "z": "15aacc0f70f98535",
+        "name": "/complexEvents",
+        "method": "POST",
+        "ret": "txt",
+        "paytoqs": "ignore",
+        "url": "http://127.0.0.1:8484/Sonobuoys/complexEvents",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "",
+        "senderr": false,
+        "headers": [
+            {
+                "keyType": "Content-Type",
+                "keyValue": "",
+                "valueType": "application/json",
+                "valueValue": ""
+            }
+        ],
+        "x": 600,
+        "y": 660,
+        "wires": [
+            [
                 "7f3fdefd7c42fc51"
             ]
         ]
@@ -244,7 +295,7 @@
         "targetType": "msg",
         "statusVal": "",
         "statusType": "auto",
-        "x": 460,
+        "x": 860,
         "y": 660,
         "wires": []
     },

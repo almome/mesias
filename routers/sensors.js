@@ -24,10 +24,17 @@ const TelemetrySchema = new mongoose.Schema({
 
 const Telemetry = mongoose.model("Telemetry", TelemetrySchema);
 
+/** Eventos complejos del CEP (Java → RabbitMQ → Node-RED → POST). Campos variables según la consulta EPL. */
+const ComplexEventSchema = new mongoose.Schema({
+    ts: { type: Date, default: Date.now },
+    EventoComplejo: { type: String, required: true }
+}, { strict: false, collection: "complex_events" });
+
+const ComplexEvent = mongoose.models.ComplexEvent || mongoose.model("ComplexEvent", ComplexEventSchema);
+
 mongoose.connect("mongodb://localhost:27017/ocean_iot")
     .then(()=> console.log("MongoDB connected"))
     .catch(err => console.log("MongoDB error:", err));
-
 
 
 //Devuelve un lista de las sonoboyas que hay actualmente en funcionamiento
@@ -113,6 +120,31 @@ router.route('/sonobuoyFieldHistory').get(async function (req, res, next) {
     next();
 });
 
+// POST: eventos complejos detectados por el CEP (Node-RED reenvía el JSON de OutputMessages)
+router.route('/complexEvents').post(async function (req, res, next) {
+    try {
+        const data = typeof req.body === "object" && req.body !== null ? { ...req.body } : {};
+
+        if (!data.EventoComplejo || String(data.EventoComplejo).trim() === "") {
+            res.status(400).send("Missing EventoComplejo");
+            return next();
+        }
+
+        if (!data.ts) {
+            data.ts = new Date();
+        } else if (!(data.ts instanceof Date)) {
+            data.ts = new Date(data.ts);
+        }
+
+        const saved = await ComplexEvent.create(data);
+        console.log("Inserted complex event:", saved.EventoComplejo, saved._id);
+        res.status(201).json({ ok: true, id: String(saved._id) });
+    } catch (e) {
+        console.error("Complex event insert error:", e);
+        res.status(400).send("Error saving complex event");
+    }
+    next();
+});
 
 //Post para actualizar la base de datos de sonoboyas
 router.route('/updateSonobuoys').post(async function (req, res, next) {
