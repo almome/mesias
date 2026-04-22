@@ -132,7 +132,7 @@ public class EsperQueries {
                     "'ALERTA: AIRE CONTAMINADO HACIA CIUDAD' as mensaje " +
                     "FROM pattern [ " +
                     "every e = eNose(airQuality < 30) " +
-                    "-> v = Viento(direction in ('S', 'SE', 'SW', 'SSE', 'SSW') " +
+                    "-> v = Viento(direction in ('N', 'NE', 'NW', 'NNE', 'NNW', 'W') " +
                     "AND velocidad > 15.0) " +         // <-- corregido: velocidad no velocity
                     "where timer:within(10 min) " +
                     "]";
