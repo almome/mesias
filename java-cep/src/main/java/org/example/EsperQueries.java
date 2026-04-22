@@ -30,6 +30,7 @@ public class EsperQueries {
 
     public static final String ALERTA_TRAFICO_MARINO =
             "@name('AlertaTraficoMarino') " +
+
                     "insert into AlertaTraficoMarino " +
                     "SELECT id, lat, lon, " +
                     "avg(dom_freq_hz) as freq_media, " +
@@ -44,6 +45,7 @@ public class EsperQueries {
 
     public static final String ALERTA_CETACEOS_BARCOS =
             "@name('AlertaCetaceosBarcos') " +
+
                     "insert into AlertaCetaceosBarcos " +
                     "SELECT c.id as sensor_cetaceo, " +
                     "t.id as sensor_trafico, " +
@@ -63,6 +65,7 @@ public class EsperQueries {
 
     public static final String ALERTA_CONTAMINACION_ACUSTICA =
             "@name('AlertaContaminacionAcustica') " +
+
                     "insert into AlertaContaminacionAcustica " +
                     "SELECT id, lat, lon, " +
                     "max(spl_db) as pico_spl, " +
@@ -75,6 +78,7 @@ public class EsperQueries {
 
     public static final String ALERTA_MAREMOTO =
             "@name('AlertaMaremoto') " +
+
                     "insert into AlertaMaremoto " +
                     "SELECT p.id as sensor_presion, " +
                     "t.id as sensor_temp, " +
@@ -92,6 +96,7 @@ public class EsperQueries {
 
     public static final String ALERTA_AGUA_CONTAMINADA =
             "@name('AlertaAguaContaminada') " +
+
                     "insert into AlertaAguaContaminada " +
                     "SELECT s.id, s.lat, s.lon, " +
                     "s.sal_psu, t.temp_c, " +
@@ -106,6 +111,7 @@ public class EsperQueries {
 
     public static final String ALERTA_AIRE_CONTAMINADO =
             "@name('AlertaAireContaminado') " +
+
                     "insert into AlertaAireContaminado " +
                     "SELECT id, lat, lon, " +
                     "avg(airQuality) as calidad_media, " +
@@ -117,6 +123,7 @@ public class EsperQueries {
 
     public static final String ALERTA_CONTAMINACION_CIUDAD =
             "@name('AlertaContaminacionCiudad') " +
+
                     "insert into AlertaContaminacionCiudad " +
                     "SELECT e.id, e.lat, e.lon, " +
                     "e.airQuality, " +
@@ -132,6 +139,7 @@ public class EsperQueries {
 
     public static final String ALERTA_CONTAMINACION_PLAYAS =
             "@name('AlertaContaminacionPlayas') " +
+
                     "insert into AlertaContaminacionPlayas " +
                     "SELECT * " +
                     "FROM Salinidad#time(15 min) " +
@@ -154,6 +162,7 @@ public class EsperQueries {
 
     public static final String ALERTA_TERREMOTO =
             "@name('AlertaTerremoto') " +
+
                     "insert into AlertaTerremoto " +
                     "SELECT p.id as sensor_presion, " +
                     "d.id as sensor_profundidad, " +
@@ -183,5 +192,58 @@ public class EsperQueries {
                 ALERTA_CONTAMINACION_PLAYAS,
                 ALERTA_TERREMOTO
         };
+    }
+
+    public static String[] getAllInContext(String contextName) {
+        String[] base = getAll();
+        String[] out = new String[base.length];
+        for (int i = 0; i < base.length; i++) {
+            out[i] = addContextAfterAnnotations(base[i], contextName);
+        }
+        return out;
+    }
+
+    private static String addContextAfterAnnotations(String epl, String contextName) {
+        if (epl == null) {
+            return null;
+        }
+        String s = epl.trim();
+        if (s.isEmpty()) {
+            return s;
+        }
+
+        // If already has a context clause, don't add another.
+        int firstTokenEnd = 0;
+        while (firstTokenEnd < s.length() && !Character.isWhitespace(s.charAt(firstTokenEnd))) {
+            firstTokenEnd++;
+        }
+        String firstToken = s.substring(0, firstTokenEnd);
+        if ("context".equalsIgnoreCase(firstToken)) {
+            return s;
+        }
+
+        // Esper requires annotations to come first. Insert "context X" after leading annotations.
+        int i = 0;
+        while (i < s.length()) {
+            while (i < s.length() && Character.isWhitespace(s.charAt(i))) {
+                i++;
+            }
+            if (i >= s.length() || s.charAt(i) != '@') {
+                break;
+            }
+            while (i < s.length() && !Character.isWhitespace(s.charAt(i))) {
+                i++;
+            }
+        }
+
+        String annotations = s.substring(0, i).trim();
+        String rest = s.substring(i).trim();
+        if (annotations.isEmpty()) {
+            return "context " + contextName + " " + rest;
+        }
+        if (rest.isEmpty()) {
+            return annotations + " context " + contextName;
+        }
+        return annotations + " context " + contextName + " " + rest;
     }
 }
