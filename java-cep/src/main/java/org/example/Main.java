@@ -38,7 +38,7 @@ public class Main {
                         + "@public @buseventtype create json schema Presion (id String, lat int, lon int, pressure_dbar int, source String); "
                         + "@public @buseventtype create json schema Sonido (id String, lat int, lon int, dom_freq_hz int, spl_db int, snr_db int, source String); "
                         + "@public @buseventtype create json schema Estado (id String, lat int, lon int, batt_pct int, rssi_dbm int, status String, source String); "
-                        + "@public @buseventtype create json schema Viento (direction String, velocidad double, source String); "
+                        + "@public @buseventtype create json schema Viento (direction String, velocity double, source String); "
                         + "@public @buseventtype create json schema eNose (id String, lat int, lon int, airQuality int, source String)";
 
         String contextEpl =
