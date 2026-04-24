@@ -1,6 +1,6 @@
 [
     {
-        "id": "15aacc0f70f98535",
+        "id": "40345386b934b74c",
         "type": "tab",
         "label": "NodeRed_PracticalAssignment2526_MoronAlexandra_QuintanaLuisJose",
         "disabled": false,
@@ -8,9 +8,9 @@
         "env": []
     },
     {
-        "id": "05e05784143f63d1",
+        "id": "6d23eed45b370204",
         "type": "http request",
-        "z": "15aacc0f70f98535",
+        "z": "40345386b934b74c",
         "name": "/updateSonobuoys",
         "method": "POST",
         "ret": "txt",
@@ -34,14 +34,14 @@
         "y": 220,
         "wires": [
             [
-                "069c0a331e1e3db8"
+                "d5e2f55828c85d79"
             ]
         ]
     },
     {
-        "id": "069c0a331e1e3db8",
+        "id": "d5e2f55828c85d79",
         "type": "debug",
-        "z": "15aacc0f70f98535",
+        "z": "40345386b934b74c",
         "name": "debug 7",
         "active": false,
         "tosidebar": true,
@@ -56,11 +56,11 @@
         "wires": []
     },
     {
-        "id": "376f7049bd91b499",
+        "id": "f3c84ce50a98af80",
         "type": "mqtt in",
-        "z": "15aacc0f70f98535",
+        "z": "40345386b934b74c",
         "name": "",
-        "topic": "mesias/buoy/#",
+        "topic": "mesias/telemetry/#",
         "qos": "0",
         "datatype": "auto-detect",
         "broker": "72b9ccec460bb788",
@@ -68,18 +68,18 @@
         "rap": true,
         "rh": 0,
         "inputs": 0,
-        "x": 220,
+        "x": 240,
         "y": 220,
         "wires": [
             [
-                "9d24507c62394298"
+                "462c4820ca940c5a"
             ]
         ]
     },
     {
-        "id": "9d24507c62394298",
+        "id": "462c4820ca940c5a",
         "type": "function",
-        "z": "15aacc0f70f98535",
+        "z": "40345386b934b74c",
         "name": "detectorStatus",
         "func": "let data = msg.payload;\n\nif(data.status == \"deployed\"){\n\n    // Ejemplo: regla simple\n    if (data.spl_db > 150 && data.snr_db > 20) {\n        data.status = \"ALERT\";\n    } else if (data.spl_db > 120) {\n        data.status = \"WARNING\";\n    } else {\n        data.status = \"OK\";\n    }\n\n    // Devuelve el JSON modificado\n    msg.payload = {\n        id: data.id,\n        lat: data.lat,\n        lon: data.lon,\n        temp_c: data.temp_c,\n        sal_psu: data.sal_psu,\n        pressure_dbar: data.pressure_dbar,\n        depth_m: data.depth_m,\n        dom_freq_hz: data.dom_freq_hz,\n        spl_db: data.spl_db,\n        snr_db: data.snr_db,\n        batt_pct: data.batt_pct,\n        rssi_dbm: data.rssi_dbm,\n        status: data.status\n    };\n}\n\n\nreturn msg;",
         "outputs": 1,
@@ -92,15 +92,15 @@
         "y": 220,
         "wires": [
             [
-                "05e05784143f63d1",
-                "d0d5a28bf46ba18f"
+                "6d23eed45b370204",
+                "a1de410925564215"
             ]
         ]
     },
     {
-        "id": "a265e7b78d411bf6",
+        "id": "369326918ec8b42c",
         "type": "inject",
-        "z": "15aacc0f70f98535",
+        "z": "40345386b934b74c",
         "name": "Simulador SB-0237",
         "props": [
             {
@@ -118,14 +118,14 @@
         "y": 340,
         "wires": [
             [
-                "082aef64eee5ac08"
+                "1eb038c0fbcedc0b"
             ]
         ]
     },
     {
-        "id": "082aef64eee5ac08",
+        "id": "1eb038c0fbcedc0b",
         "type": "function",
-        "z": "15aacc0f70f98535",
+        "z": "40345386b934b74c",
         "name": "Generar datos SB-0237",
         "func": "\nfunction rand(base, delta, decimals = 2) {\n    const v = base + (Math.random() * 2 - 1) * delta;\n    return Number(v.toFixed(decimals));\n}\n\nconst now = Math.floor(Date.now() / 1000); // timestamp en segundos\n\nlet temp_c = rand(18.7, 0.8);\nlet sal_psu = rand(35.1, 0.5);\nlet pressure = rand(1025.6, 10);\nlet depth_m = rand(35.2, 3);\nlet dom_freq_hz = rand(820, 200, 0);\nlet spl_db = rand(145.3, 15);\nlet snr_db = rand(23.5, 8);\nlet batt_pct = rand(60, 20, 0); // batería entre 40 y 80\nlet rssi_dbm = Math.round(-64 + (Math.random() * 2 - 1) * 6);\nlet status = \"deployed\"\n\nmsg.payload = {\n    id: \"SB-0237\",\n    lat: 36.54723,\n    lon: -6.28219,\n\n    temp_c: temp_c,\n    sal_psu: sal_psu,\n    pressure_dbar: pressure,\n    depth_m: depth_m,\n\n    dom_freq_hz: dom_freq_hz,\n    spl_db: spl_db,\n    snr_db: snr_db,\n\n    batt_pct: batt_pct,\n    rssi_dbm: rssi_dbm,\n\n    status: status,\n    timestamp: now\n};\n\nmsg.topic = \"sonobuoys/telemetry/SB-0237\";\n\nreturn msg;",
         "outputs": 1,
@@ -138,14 +138,14 @@
         "y": 340,
         "wires": [
             [
-                "9d24507c62394298"
+                "462c4820ca940c5a"
             ]
         ]
     },
     {
-        "id": "6f19ece1e374408b",
+        "id": "92c2c8563a1a3366",
         "type": "inject",
-        "z": "15aacc0f70f98535",
+        "z": "40345386b934b74c",
         "name": "Simulador SB-0238",
         "props": [
             {
@@ -163,14 +163,14 @@
         "y": 400,
         "wires": [
             [
-                "383d1b061ceb16fa"
+                "eda3781a9b23f59a"
             ]
         ]
     },
     {
-        "id": "383d1b061ceb16fa",
+        "id": "eda3781a9b23f59a",
         "type": "function",
-        "z": "15aacc0f70f98535",
+        "z": "40345386b934b74c",
         "name": "Generar datos SB-0238",
         "func": "function rand(base, delta, decimals = 2) {\n    const v = base + (Math.random() * 2 - 1) * delta;\n    return Number(v.toFixed(decimals));\n}\n\nconst now = Math.floor(Date.now() / 1000); // timestamp en segundos\n\nlet temp_c = rand(19.5, 1.0);\nlet sal_psu = rand(34.8, 0.7);\nlet pressure = rand(1030, 15);\nlet depth_m = rand(40, 5);\nlet dom_freq_hz = rand(900, 250, 0);\nlet spl_db = rand(150, 20);\nlet snr_db = rand(20, 10);\nlet batt_pct = rand(50, 25, 0); // batería algo más baja\nlet rssi_dbm = Math.round(-70 + (Math.random() * 2 - 1) * 8);\nlet status = \"deployed\"\n\nmsg.payload = {\n    id: \"SB-0238\",\n    lat: 36.54723,\n    lon: -6.28219,\n\n    temp_c: temp_c,\n    sal_psu: sal_psu,\n    pressure_dbar: pressure,\n    depth_m: depth_m,\n\n    dom_freq_hz: dom_freq_hz,\n    spl_db: spl_db,\n    snr_db: snr_db,\n\n    batt_pct: batt_pct,\n    rssi_dbm: rssi_dbm,\n\n    status: status,\n    timestamp: now\n};\n\nmsg.topic = \"sonobuoys/telemetry/SBY-0238A\";\n\nreturn msg;",
         "outputs": 1,
@@ -183,16 +183,16 @@
         "y": 400,
         "wires": [
             [
-                "9d24507c62394298"
+                "462c4820ca940c5a"
             ]
         ]
     },
     {
-        "id": "d0d5a28bf46ba18f",
+        "id": "a1de410925564215",
         "type": "amqp-out",
-        "z": "15aacc0f70f98535",
+        "z": "40345386b934b74c",
         "name": "",
-        "broker": "ae1e66acb227bd57",
+        "broker": "393e2c235f752873",
         "exchangeName": "amq.topic",
         "exchangeType": "topic",
         "exchangeRoutingKey": "InputMessages.sensores",
@@ -206,11 +206,11 @@
         "wires": []
     },
     {
-        "id": "18bbbc1bf661886d",
+        "id": "082f72935747d6fd",
         "type": "amqp-in",
-        "z": "15aacc0f70f98535",
+        "z": "40345386b934b74c",
         "name": "",
-        "broker": "ae1e66acb227bd57",
+        "broker": "393e2c235f752873",
         "prefetch": 0,
         "noAck": true,
         "exchangeName": "",
@@ -227,14 +227,14 @@
         "y": 660,
         "wires": [
             [
-                "f1a2b3c4d5e6f708"
+                "6011a6f01c2435fa"
             ]
         ]
     },
     {
-        "id": "f1a2b3c4d5e6f708",
+        "id": "6011a6f01c2435fa",
         "type": "function",
-        "z": "15aacc0f70f98535",
+        "z": "40345386b934b74c",
         "name": "parse CEP JSON",
         "func": "if (Buffer.isBuffer(msg.payload)) {\n    msg.payload = msg.payload.toString('utf8');\n}\nif (typeof msg.payload === 'string') {\n    try {\n        msg.payload = JSON.parse(msg.payload);\n    } catch (e) {\n        node.error('CEP JSON inválido: ' + e.message);\n        return null;\n    }\n}\nreturn msg;",
         "outputs": 1,
@@ -247,14 +247,14 @@
         "y": 660,
         "wires": [
             [
-                "e0f9a8b7c6d5e413"
+                "995c6083e522a8af"
             ]
         ]
     },
     {
-        "id": "e0f9a8b7c6d5e413",
+        "id": "995c6083e522a8af",
         "type": "http request",
-        "z": "15aacc0f70f98535",
+        "z": "40345386b934b74c",
         "name": "/complexEvents",
         "method": "POST",
         "ret": "txt",
@@ -278,14 +278,14 @@
         "y": 660,
         "wires": [
             [
-                "7f3fdefd7c42fc51"
+                "f44a01db5798a94c"
             ]
         ]
     },
     {
-        "id": "7f3fdefd7c42fc51",
+        "id": "f44a01db5798a94c",
         "type": "debug",
-        "z": "15aacc0f70f98535",
+        "z": "40345386b934b74c",
         "name": "debug 5",
         "active": true,
         "tosidebar": true,
@@ -298,6 +298,96 @@
         "x": 860,
         "y": 660,
         "wires": []
+    },
+    {
+        "id": "7b0a64c04cb6d11f",
+        "type": "inject",
+        "z": "40345386b934b74c",
+        "name": "Simulador Anemometro",
+        "props": [
+            {
+                "p": "payload"
+            }
+        ],
+        "repeat": "3",
+        "crontab": "",
+        "once": true,
+        "onceDelay": "2",
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 190,
+        "y": 480,
+        "wires": [
+            [
+                "3ebe3451c1ec2924"
+            ]
+        ]
+    },
+    {
+        "id": "3ebe3451c1ec2924",
+        "type": "function",
+        "z": "40345386b934b74c",
+        "name": "Generar datos Anemometro",
+        "func": "function rand(base, delta, decimals = 2) {\n    const v = base + (Math.random() * 2 - 1) * delta;\n    return Number(v.toFixed(decimals));\n}\n\nconst now = Math.floor(Date.now() / 1000); // timestamp en segundos\n\nlet velocidad = rand(27.0, 1.0);\nlet direction = \"W\";\n\nmsg.payload = {\n    id: \"AM-0008\",\n    lat: 35.053989,\n    lon: 136.821071,\n\n    velocidad: velocidad,\n    direction: direction,\n    timestamp: now\n};\n\nmsg.topic = \"mesias/telemetry/AM-0008\";\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 520,
+        "y": 480,
+        "wires": [
+            [
+                "462c4820ca940c5a"
+            ]
+        ]
+    },
+    {
+        "id": "a41d7ab502818dcc",
+        "type": "inject",
+        "z": "40345386b934b74c",
+        "name": "Simulador EN-0100",
+        "props": [
+            {
+                "p": "payload"
+            }
+        ],
+        "repeat": "30",
+        "crontab": "",
+        "once": true,
+        "onceDelay": "2",
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 200,
+        "y": 560,
+        "wires": [
+            [
+                "d34f0a4ed212db40"
+            ]
+        ]
+    },
+    {
+        "id": "d34f0a4ed212db40",
+        "type": "function",
+        "z": "40345386b934b74c",
+        "name": "Generar datos EN-0100",
+        "func": "function rand(base, delta, decimals = 2) {\n    const v = base + (Math.random() * 2 - 1) * delta;\n    return Number(v.toFixed(decimals));\n}\n\nconst now = Math.floor(Date.now() / 1000); // timestamp en segundos\n\nlet airQuality = rand(45, 10, 0);\n\nmsg.payload = {\n    id: \"EN-0100\",\n    lat: 34.975226,\n    lon: 136.828512,\n\n    airQuality: airQuality,\n    timestamp: now\n};\n\nmsg.topic = \"mesias/telemetry/EN-0100\";\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 510,
+        "y": 560,
+        "wires": [
+            [
+                "462c4820ca940c5a"
+            ]
+        ]
     },
     {
         "id": "72b9ccec460bb788",
@@ -331,7 +421,7 @@
         "sessionExpiry": ""
     },
     {
-        "id": "ae1e66acb227bd57",
+        "id": "393e2c235f752873",
         "type": "amqp-broker",
         "name": "test",
         "host": "localhost",
@@ -342,7 +432,7 @@
         "credsFromSettings": false
     },
     {
-        "id": "595f9c5fbcc628b2",
+        "id": "2b436e542d8fb0c2",
         "type": "global-config",
         "env": [],
         "modules": {
