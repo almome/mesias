@@ -30,20 +30,41 @@ public class Main {
 
         // EPStatement configuration
         EsperUtils.init();
-        EsperUtils.deployPattern(
-                "@public @buseventtype create json schema Temperatura (id String, lat int, lon int, temp_c int); "
-                        + "@public @buseventtype create json schema Profundidad (id String, lat int, lon int, depth_m int); "
-                        + "@public @buseventtype create json schema Salinidad (id String, lat int, lon int, sal_psu int); "
-                        + "@public @buseventtype create json schema Presion (id String, lat int, lon int, pressure_dbar int); "
-                        + "@public @buseventtype create json schema Sonido (id String, lat int, lon int, dom_freq_hz int, spl_db int, snr_db int); "
-                        + "@public @buseventtype create json schema Estado (id String, lat int, lon int, batt_pct int, rssi_dbm int, status String); "
-                        + "@public @buseventtype create json schema Viento (direction String, velocidad double); "
-                        + "@public @buseventtype create json schema eNose (id String, lat int, lon int, airQuality int); ");
-        // Varias sentencias EPL en un solo compile: separadas por ';' (ver EsperQueries.getAll()).
-        EPStatement[] statements = EsperUtils.deployPattern(
-                String.join("; ", EsperQueries.getAll())).getStatements();
+
+        String schemasEpl =
+                "@public @buseventtype create json schema Temperatura (id String, lat int, lon int, temp_c int, source String); "
+                        + "@public @buseventtype create json schema Profundidad (id String, lat int, lon int, depth_m int, source String); "
+                        + "@public @buseventtype create json schema Salinidad (id String, lat int, lon int, sal_psu int, source String); "
+                        + "@public @buseventtype create json schema Presion (id String, lat int, lon int, pressure_dbar int, source String); "
+                        + "@public @buseventtype create json schema Sonido (id String, lat int, lon int, dom_freq_hz int, spl_db int, snr_db int, source String); "
+                        + "@public @buseventtype create json schema Estado (id String, lat int, lon int, batt_pct int, rssi_dbm int, status String, source String); "
+                        + "@public @buseventtype create json schema Viento (direction String, velocity double, source String); "
+                        + "@public @buseventtype create json schema eNose (id String, lat int, lon int, airQuality int, source String)";
+
+        String contextEpl =
+                "create context SegmentedBySource " +
+                        "partition by " +
+                        "source from Temperatura, " +
+                        "source from Profundidad, " +
+                        "source from Salinidad, " +
+                        "source from Presion, " +
+                        "source from Sonido, " +
+                        "source from Estado, " +
+                        "source from Viento, " +
+                        "source from eNose";
+
+        String allEpl = String.join("; ",
+                schemasEpl,
+                contextEpl,
+                String.join("; ", EsperQueries.getAllInContext("SegmentedBySource"))
+        );
+
+        EPStatement[] statements = EsperUtils.deployPattern(allEpl).getStatements();
         for (EPStatement epStatement : statements) {
-            EsperUtils.addListener(epStatement, channel);
+            String name = epStatement.getName();
+            if (name != null && name.startsWith("Alerta")) {
+                EsperUtils.addListener(epStatement, channel);
+            }
         }
 
         boolean autoAck = false;
@@ -96,9 +117,19 @@ public class Main {
         JSONObject raw = new JSONObject(jsonEntrada);
         JSONObject n = normalizarClavesJson(raw);
 
+
+
         String id = optCadena(n, "id");
         Integer lat = optEntero(n, "lat");
         Integer lon = optEntero(n, "lon");
+
+        if(id.charAt(0)=='F'){
+            n.put("source", "simulation");
+        }
+        else{
+            n.put("source", "nominal");
+        }
+        String partition = optCadena(n,"source");
 
         if (n.has("direction") && !n.isNull("direction")) {
             String direction = optCadena(n, "direction");
@@ -109,6 +140,7 @@ public class Main {
             JSONObject o = new JSONObject();
             o.put("direction", direction);
             o.put("velocity", velocity);
+            o.put("source", partition);
             EsperUtils.sendEventTyped(o.toString(), "Viento");
             return;
         }
@@ -126,6 +158,7 @@ public class Main {
             o.put("lat", lat);
             o.put("lon", lon);
             o.put("airQuality", iaq);
+            o.put("source", partition);
             EsperUtils.sendEventTyped(o.toString(), "eNose");
             return;
         }
@@ -136,6 +169,7 @@ public class Main {
             o.put("lat", lat);
             o.put("lon", lon);
             o.put("temp_c", optEntero(n, "temp_c"));
+            o.put("source", partition);
             EsperUtils.sendEventTyped(o.toString(), "Temperatura");
         });
 
@@ -145,6 +179,7 @@ public class Main {
             o.put("lat", lat);
             o.put("lon", lon);
             o.put("depth_m", optEntero(n, "depth_m"));
+            o.put("source", partition);
             EsperUtils.sendEventTyped(o.toString(), "Profundidad");
         });
 
@@ -154,6 +189,7 @@ public class Main {
             o.put("lat", lat);
             o.put("lon", lon);
             o.put("sal_psu", optEntero(n, "sal_psu"));
+            o.put("source", partition);
             EsperUtils.sendEventTyped(o.toString(), "Salinidad");
         });
 
@@ -163,6 +199,7 @@ public class Main {
             o.put("lat", lat);
             o.put("lon", lon);
             o.put("pressure_dbar", optEntero(n, "pressure_dbar"));
+            o.put("source", partition);
             EsperUtils.sendEventTyped(o.toString(), "Presion");
         });
 
@@ -174,6 +211,7 @@ public class Main {
             o.put("dom_freq_hz", optEntero(n, "dom_freq_hz"));
             o.put("spl_db", optEntero(n, "spl_db"));
             o.put("snr_db", optEntero(n, "snr_db"));
+            o.put("source", partition);
             EsperUtils.sendEventTyped(o.toString(), "Sonido");
         }
 
@@ -185,6 +223,7 @@ public class Main {
             o.put("batt_pct", optEntero(n, "batt_pct"));
             o.put("rssi_dbm", optEntero(n, "rssi_dbm"));
             o.put("status", optCadena(n, "status"));
+            o.put("source", partition);
             EsperUtils.sendEventTyped(o.toString(), "Estado");
         }
     }
