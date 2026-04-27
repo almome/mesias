@@ -1,15 +1,16 @@
 package org.example;
 
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.concurrent.CountDownLatch;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import com.espertech.esper.runtime.client.EPStatement;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.util.concurrent.CountDownLatch;
 
 //Por Alexandra Moron Mendez
 
@@ -32,14 +33,18 @@ public class Main {
         EsperUtils.init();
 
         String schemasEpl =
-                "@public @buseventtype create json schema Temperatura (id String, lat int, lon int, temp_c int, source String); "
-                        + "@public @buseventtype create json schema Profundidad (id String, lat int, lon int, depth_m int, source String); "
-                        + "@public @buseventtype create json schema Salinidad (id String, lat int, lon int, sal_psu int, source String); "
-                        + "@public @buseventtype create json schema Presion (id String, lat int, lon int, pressure_dbar int, source String); "
-                        + "@public @buseventtype create json schema Sonido (id String, lat int, lon int, dom_freq_hz int, spl_db int, snr_db int, source String); "
-                        + "@public @buseventtype create json schema Estado (id String, lat int, lon int, batt_pct int, rssi_dbm int, status String, source String); "
+                "@public @buseventtype create json schema Temperatura (id String, lat double, lon double, temp_c double, source String); "
+                        + "@public @buseventtype create json schema Profundidad (id String, lat double, lon double, depth_m double, source String); "
+                        + "@public @buseventtype create json schema Salinidad (id String, lat double, lon double, sal_psu double, source String); "
+                        + "@public @buseventtype create json schema Presion (id String, lat double, lon double, pressure_dbar double, source String); "
+                        + "@public @buseventtype create json schema Sonido (id String, lat double, lon double, dom_freq_hz double, spl_db double, snr_db double, source String); "
+                        + "@public @buseventtype create json schema Estado (id String, lat double, lon double, batt_pct double, rssi_dbm double, status String, source String); "
                         + "@public @buseventtype create json schema Viento (direction String, velocity double, source String); "
-                        + "@public @buseventtype create json schema eNose (id String, lat int, lon int, airQuality int, source String)";
+                        + "@public @buseventtype create json schema eNose (id String, lat double, lon double, airQuality int, source String);"
+                        + "@public @buseventtype create json schema AlertaTerremoto (source String, id1 String, id2 String, lat double, lon double, mensaje String);"
+                        + "@public @buseventtype create json schema AlertaCetaceos (source String, id String, lat double, lon double, dom_freq_hz double, snr_db double, mensaje String, avg_spl double, num_detecciones long, spl_db double);"
+                        + "@public @buseventtype create json schema AlertaTraficoMarino (source String, id String, lat double, lon double, batt_pct double, rssi_dbm double, status String, mensaje String, freq_media double, spl_medio double, lecturas long);"
+                        + "@public @buseventtype create json schema AlertaAireContaminado (source String, id String, lat double, lon double, calidad_media double, peor_lectura double, num_lecturas long);";
 
         String contextEpl =
                 "create context SegmentedBySource " +
@@ -51,7 +56,10 @@ public class Main {
                         "source from Sonido, " +
                         "source from Estado, " +
                         "source from Viento, " +
-                        "source from eNose";
+                        "source from eNose, " +
+                        "source from AlertaTerremoto, " +
+                        "source from AlertaCetaceos, " +
+                        "source from AlertaTraficoMarino";
 
         String allEpl = String.join("; ",
                 schemasEpl,
