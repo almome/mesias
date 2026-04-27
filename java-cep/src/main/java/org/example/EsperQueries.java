@@ -55,7 +55,7 @@ public class EsperQueries {
                     "avg(spl_db) as media_spl, " +
                     "count(*) as eventos_ruidosos " +
                     "FROM Sonido#time(30) " +
-                    "WHERE spl_db > 150 " +
+                    "WHERE spl_db > 150 AND dom_freq_hz > 50 " +
                     "HAVING avg(spl_db) > 140 AND count(*) >= 3 " +
                     "OUTPUT SNAPSHOT EVERY 10 seconds";
 
@@ -99,8 +99,8 @@ public class EsperQueries {
                     "avg(airQuality) as calidad_media, " +
                     "min(airQuality) as peor_lectura, " +
                     "count(*) as num_lecturas " +
-                    "FROM eNose#time_batch(10) " +
-                    "HAVING avg(airQuality) < 30 ";
+                    "FROM eNose#time(10) " +
+                    "HAVING avg(airQuality) < 40 ";
 
     public static final String ALERTA_CONTAMINACION_CIUDAD =
             "@name('AlertaContaminacionCiudad') " +
@@ -150,10 +150,10 @@ public class EsperQueries {
                     "p.lat as lat, p.lon as lon, " +
                     "'ALERTA TERREMOTO SUBMARINO' as mensaje " +
                     "FROM pattern [ " +
-                    "(every p = Sonido(dom_freq_hz BETWEEN 10 AND 20" +
-                            "AND spl_db > 150 AND snr_db > 10)" +
-                    "-> d = Sonido(dom_freq_hz BETWEEN 10 AND 20" +
-                            "AND spl_db > 150 AND snr_db > 10 AND id != p.id)) " +
+                    "(every p = Sonido(dom_freq_hz BETWEEN 10 AND 20 " +
+                            "AND spl_db > 150 AND snr_db > 10) " +
+                    "-> d = Sonido(dom_freq_hz BETWEEN 10 AND 20 " +
+                            "AND spl_db > 150 AND snr_db > 10 AND d.id != p.id)) " +
                     "where timer:within(30) " +
                     "]";                             
 
