@@ -1,26 +1,11 @@
 package org.example;
 
-import com.espertech.esper.common.client.EPCompiled;
-import com.espertech.esper.common.client.configuration.Configuration;
-import com.espertech.esper.compiler.client.CompilerArguments;
-import com.espertech.esper.compiler.client.EPCompileException;
-import com.espertech.esper.compiler.client.EPCompiler;
-import com.espertech.esper.compiler.client.EPCompilerProvider;
-import com.espertech.esper.runtime.client.*;
-import com.rabbitmq.client.Channel;
-import org.json.JSONObject;
-
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.util.Map;
-import java.util.TimeZone;
-
 public class EsperQueries {
 
     public static final String ALERTA_CETACEOS =
             "@name('AlertaCetaceos') " +
                     "insert into AlertaCetaceos " +
-                    "SELECT id, lat, lon, dom_freq_hz, spl_db, snr_db, " +
+                    "SELECT source, id, lat, lon, dom_freq_hz, spl_db, snr_db, " +
                     "avg(spl_db) as avg_spl, count(*) as num_detecciones " +
                     "FROM Sonido#time_batch(2 min) " +
                     "WHERE dom_freq_hz BETWEEN 10 AND 10000 " +
@@ -32,7 +17,7 @@ public class EsperQueries {
             "@name('AlertaTraficoMarino') " +
 
                     "insert into AlertaTraficoMarino " +
-                    "SELECT id, lat, lon, " +
+                    "SELECT source, id, lat, lon, " +
                     "avg(dom_freq_hz) as freq_media, " +
                     "avg(spl_db) as spl_medio, " +
                     "count(*) as lecturas " +
@@ -47,7 +32,7 @@ public class EsperQueries {
             "@name('AlertaCetaceosBarcos') " +
 
                     "insert into AlertaCetaceosBarcos " +
-                    "SELECT c.id as sensor_cetaceo, " +
+                    "SELECT c.source as source, c.id as sensor_cetaceo, " +
                     "t.id as sensor_trafico, " +
                     "c.lat, c.lon, " +
                     "c.spl_db as spl_cetaceo, " +
@@ -67,7 +52,7 @@ public class EsperQueries {
             "@name('AlertaContaminacionAcustica') " +
 
                     "insert into AlertaContaminacionAcustica " +
-                    "SELECT id, lat, lon, " +
+                    "SELECT source, id, lat, lon, " +
                     "max(spl_db) as pico_spl, " +
                     "avg(spl_db) as media_spl, " +
                     "count(*) as eventos_ruidosos " +
@@ -80,7 +65,7 @@ public class EsperQueries {
             "@name('AlertaMaremoto') " +
 
                     "insert into AlertaMaremoto " +
-                    "SELECT p.id as sensor_presion, " +
+                    "SELECT p.source as source, p.id as sensor_presion, " +
                     "t.id as sensor_temp, " +
                     "p.lat, p.lon, " +
                     "p.pressure_dbar as presion_inicial, " +
@@ -98,7 +83,7 @@ public class EsperQueries {
             "@name('AlertaAguaContaminada') " +
 
                     "insert into AlertaAguaContaminada " +
-                    "SELECT s.id, s.lat, s.lon, " +
+                    "SELECT s.source as source, s.id, s.lat, s.lon, " +
                     "s.sal_psu, t.temp_c, " +
                     "'AGUAS CONTAMINADAS' as alerta " +
                     "FROM pattern [ " +      // <-- eliminado el #time(5 min) fuera del pattern
@@ -113,11 +98,11 @@ public class EsperQueries {
             "@name('AlertaAireContaminado') " +
 
                     "insert into AlertaAireContaminado " +
-                    "SELECT id, lat, lon, " +
+                    "SELECT source, id, lat, lon, " +
                     "avg(airQuality) as calidad_media, " +
                     "min(airQuality) as peor_lectura, " +
                     "count(*) as num_lecturas " +
-                    "FROM eNose#time_batch(3 min) " +
+                    "FROM eNose#time_batch(5) " +
                     "HAVING avg(airQuality) < 30 " +
                     "AND count(*) >= 3";
 
@@ -125,7 +110,7 @@ public class EsperQueries {
             "@name('AlertaContaminacionCiudad') " +
 
                     "insert into AlertaContaminacionCiudad " +
-                    "SELECT e.id, e.lat, e.lon, " +
+                    "SELECT e.source as source, e.id, e.lat, e.lon, " +
                     "e.airQuality, " +
                     "v.direction as dir_viento, " +
                     "v.velocity as vel_viento, " +   // <-- corregido: velocity no velocity
@@ -146,6 +131,7 @@ public class EsperQueries {
                     "MATCH_RECOGNIZE ( " +
                     "PARTITION BY id " +
                     "MEASURES " +
+                    "A.source as source, "+
                     "A.lat as lat_inicio, " +
                     "A.lon as lon_inicio, " +
                     "last(B.lat) as lat_actual, " +
@@ -164,7 +150,7 @@ public class EsperQueries {
             "@name('AlertaTerremoto') " +
 
                     "insert into AlertaTerremoto " +
-                    "SELECT p.id as sensor_presion, " +
+                    "SELECT p.source as source, p.id as sensor_presion, " +
                     "d.id as sensor_profundidad, " +
                     "p.lat, p.lon, " +
                     "p.pressure_dbar as presion_anomala, " +
