@@ -19,7 +19,10 @@ const TelemetrySchema = new mongoose.Schema({
     snr_db: Number,
     batt_pct: Number,
     rssi_dbm: Number,
-    status: String
+    status: String,
+    airQuality: Number,
+    velocity: Number,
+    direction: String
 }, { collection: "telemetry" });
 
 const Telemetry = mongoose.model("Telemetry", TelemetrySchema);
@@ -56,17 +59,14 @@ router.route('/listSonobuoysID').get(async function (req, res, next){
 router.route('/sonobuoyLastestReading').get(async function (req, res, next){
     try{
         const id = req.query.id;
-
         if(!id){
             res.status(400).send("No such ID");
         }
-
         const result =  await Telemetry.findOne({id}).sort({ts:-1});
 
         if(!result){
             res.status(404).send("No telemetry found for this sonobuoy.");
         }
-
         const currentTs = Math.floor(Date.now() / 1000);
         const diffTs = currentTs - Math.floor(result.ts / 1000);
 
@@ -76,7 +76,6 @@ router.route('/sonobuoyLastestReading').get(async function (req, res, next){
             await Telemetry.updateOne({id}, {$set: {status: "OFFLINE"}});
 
         }
-
         res.status(200).json(result);
 
     }catch (e) {
@@ -116,32 +115,6 @@ router.route('/sonobuoyFieldHistory').get(async function (req, res, next) {
     }catch (e) {
         console.error("Telemetry insert error:", e);
         res.status(400).send("Error getting the 10 last values");
-    }
-    next();
-});
-
-// POST: eventos complejos detectados por el CEP (Node-RED reenvía el JSON de OutputMessages)
-router.route('/complexEvents').post(async function (req, res, next) {
-    try {
-        const data = typeof req.body === "object" && req.body !== null ? { ...req.body } : {};
-
-        if (!data.EventoComplejo || String(data.EventoComplejo).trim() === "") {
-            res.status(400).send("Missing EventoComplejo");
-            return next();
-        }
-
-        if (!data.ts) {
-            data.ts = new Date();
-        } else if (!(data.ts instanceof Date)) {
-            data.ts = new Date(data.ts);
-        }
-
-        const saved = await ComplexEvent.create(data);
-        console.log("Inserted complex event:", saved.EventoComplejo, saved._id);
-        res.status(201).json({ ok: true, id: String(saved._id) });
-    } catch (e) {
-        console.error("Complex event insert error:", e);
-        res.status(400).send("Error saving complex event");
     }
     next();
 });
